@@ -5,6 +5,7 @@ import com.yogeshprojects.EasyCart.dto.UserDto;
 import com.yogeshprojects.EasyCart.entity.User;
 import com.yogeshprojects.EasyCart.enums.UserRole;
 import com.yogeshprojects.EasyCart.repository.UserRespository;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -33,5 +34,19 @@ public class AuthServiceImpl implements AuthService{
 
     public Boolean hasUserWithEmail(String email){
         return userRespository.findFirstByEmail(email).isPresent();
+    }
+
+    @PostConstruct
+    public void createAdminAccount(){
+        User adminAccount = userRespository.findByRole(UserRole.ADMIN);
+        if(null == adminAccount){
+            User user = new User();
+            user.setEmail("admin@gmail.com");
+            user.setName("admin");
+            user.setRole(UserRole.ADMIN);
+            user.setRole(UserRole.ADMIN);
+            user.setPassword(new BCryptPasswordEncoder().encode("admin"));
+            userRespository.save(user);
+        }
     }
 }
